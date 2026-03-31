@@ -14,6 +14,7 @@ import { AdminUsers } from "./pages/admin/Users";
 import { AdminProducts } from "./pages/admin/Products";
 import { AdminOrders } from "./pages/admin/Orders";
 import { Layout } from "./components/Layout";
+import { Providers } from "./pages/Providers.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +22,18 @@ export const router = createBrowserRouter([
     Component: Layout,
     children: [
       { index: true, Component: Home },
-      { path: "catalog", Component: Catalog },
+      {
+        path: "catalog", Component: Catalog,
+
+      },
+      {
+        path: "providers", Component: Providers,
+        children: [
+          { index: true, Component: ProviderDashboard },
+          { path: "products", Component: ProviderProducts },
+          { path: "sales", Component: ProviderSales },
+        ],
+      },
       { path: "product/:id", Component: ProductDetail },
       { path: "cart", Component: Cart },
       { path: "checkout", Component: Checkout },
