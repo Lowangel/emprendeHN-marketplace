@@ -3,11 +3,13 @@ import { Search, MapPin, Star, TrendingUp, Shield, Truck } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
-import { mockProducts, categories } from "../data/mockData";
+import { categories } from "../data/mockData";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { useProducts } from "../hooks/useProducts";
 
 export function Home() {
-  const featuredProducts = mockProducts.slice(0, 4);
+  const { products } = useProducts();
+  const featuredProducts = products.slice(0, 4);
 
   return (
     <div>

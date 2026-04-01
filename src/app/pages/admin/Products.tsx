@@ -24,20 +24,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { mockProducts, categories } from "../../data/mockData";
+import { categories } from "../../data/mockData";
+import { useProducts } from "../../hooks/useProducts";
 import { toast } from "sonner";
 
 export function AdminProducts() {
   const [filter, setFilter] = useState("all");
-  const [products] = useState(mockProducts);
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
 
   const filteredProducts = products.filter((product) => {
     if (filter === "all") return true;
     return product.category === filter;
   });
 
-  const handleAction = (action: string, productName: string) => {
-    toast.info(`Acción "${action}" realizada para ${productName}`);
+  const handleAction = (action: string, productName: string, productId?: string) => {
+    if (action === "Desactivar" && productId) {
+      deleteProduct(productId);
+      toast.success(`Producto "${productName}" desactivado`);
+    } else {
+      toast.info(`Acción "${action}" realizada para ${productName}`);
+    }
   };
 
   return (
@@ -171,7 +177,7 @@ export function AdminProducts() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600"
-                          onClick={() => handleAction("Desactivar", product.name)}
+                          onClick={() => handleAction("Desactivar", product.name, product.id)}
                         >
                           Desactivar
                         </DropdownMenuItem>

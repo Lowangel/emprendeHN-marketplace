@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Star, MapPin, Minus, Plus, ShoppingCart, Store, Truck, Shield } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { mockProducts } from "../data/mockData";
+import { useProducts } from "../hooks/useProducts";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { toast } from "sonner";
 
@@ -11,8 +11,9 @@ export function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
+  const { products } = useProducts();
 
-  const product = mockProducts.find((p) => p.id === id);
+  const product = products.find((p) => p.id === id);
 
   if (!product) {
     return (
@@ -191,7 +192,7 @@ export function ProductDetail() {
       <div>
         <h2 className="text-2xl font-black text-slate-900 mb-6">Productos similares</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {mockProducts
+          {products
             .filter((p) => p.category === product.category && p.id !== product.id)
             .slice(0, 4)
             .map((relatedProduct) => (

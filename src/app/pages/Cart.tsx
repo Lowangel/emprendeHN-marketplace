@@ -3,15 +3,15 @@ import { useState } from "react";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { mockProducts } from "../data/mockData";
+import { initialProducts } from "../data/mockData";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { Separator } from "../components/ui/separator";
 
 export function Cart() {
   const [cartItems, setCartItems] = useState([
-    { product: mockProducts[0], quantity: 2 },
-    { product: mockProducts[1], quantity: 1 },
-    { product: mockProducts[3], quantity: 1 },
+    { product: initialProducts[0], quantity: 2 },
+    { product: initialProducts[1], quantity: 1 },
+    { product: initialProducts[3], quantity: 1 },
   ]);
 
   const updateQuantity = (productId: string, newQuantity: number) => {

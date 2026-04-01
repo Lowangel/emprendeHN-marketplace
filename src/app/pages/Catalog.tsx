@@ -4,7 +4,8 @@ import { Search, MapPin, Star, SlidersHorizontal } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
-import { mockProducts, categories } from "../data/mockData";
+import { categories } from "../data/mockData";
+import { useProducts } from "../hooks/useProducts";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import {
   Select,
@@ -15,11 +16,12 @@ import {
 } from "../components/ui/select";
 
 export function Catalog() {
+  const { products } = useProducts();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
   const [location, setLocation] = useState("all");
 
-  const filteredProducts = mockProducts.filter((product) => {
+  const filteredProducts = products.filter((product) => {
     if (selectedCategory !== "all" && product.category !== selectedCategory) return false;
     if (priceRange === "low" && product.price > 100) return false;
     if (priceRange === "medium" && (product.price <= 100 || product.price > 200)) return false;

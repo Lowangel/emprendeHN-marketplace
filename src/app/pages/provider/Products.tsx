@@ -20,25 +20,91 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
-import { mockProducts } from "../../data/mockData";
+import { type Product } from "../../data/mockData";
+import { useProducts } from "../../hooks/useProducts";
 import { toast } from "sonner";
 
 export function ProviderProducts() {
-  const [products] = useState(mockProducts.slice(0, 5));
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
     price: "",
     stock: "",
     description: "",
+    location: "",
+    image: "",
   });
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      category: "",
+      price: "",
+      stock: "",
+      description: "",
+      location: "",
+      image: "",
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Producto agregado exitosamente");
-    setIsDialogOpen(false);
-    setFormData({ name: "", category: "", price: "", stock: "", description: "" });
+
+    if (editingProduct) {
+      // Actualizar producto existente
+      updateProduct(editingProduct.id, {
+        name: formData.name,
+        category: formData.category,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        description: formData.description,
+        location: formData.location,
+        image: formData.image,
+      });
+      toast.success("Producto actualizado exitosamente");
+      setIsEditDialogOpen(false);
+      setEditingProduct(null);
+    } else {
+      // Agregar nuevo producto
+      addProduct({
+        name: formData.name,
+        category: formData.category,
+        price: parseFloat(formData.price),
+        location: formData.location,
+        image: formData.image,
+        description: formData.description,
+        stock: parseInt(formData.stock),
+        provider: "Mi Tienda", // Puede ser dinámico si tienes usuario autenticado
+        rating: 5,
+      });
+      toast.success("Producto agregado exitosamente");
+      setIsDialogOpen(false);
+    }
+
+    resetForm();
+  };
+
+  const handleEdit = (product: Product) => {
+    setEditingProduct(product);
+    setFormData({
+      name: product.name,
+      category: product.category,
+      price: product.price.toString(),
+      stock: product.stock.toString(),
+      description: product.description,
+      location: product.location,
+      image: product.image,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteProduct(id);
+    toast.success("Producto eliminado exitosamente");
   };
 
   return (
@@ -98,6 +164,7 @@ export function ProviderProducts() {
                     id="price"
                     required
                     type="number"
+                    step="0.01"
                     placeholder="250"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -116,6 +183,26 @@ export function ProviderProducts() {
                 </div>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="location">Ubicación</Label>
+                <Input
+                  id="location"
+                  required
+                  placeholder="Tu ciudad o región"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="image">URL de imagen</Label>
+                <Input
+                  id="image"
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                  value={formData.image}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="description">Descripción</Label>
                 <textarea
                   id="description"
@@ -130,7 +217,10 @@ export function ProviderProducts() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
+                  onClick={() => {
+                    setIsDialogOpen(false);
+                    resetForm();
+                  }}
                 >
                   Cancelar
                 </Button>
@@ -142,6 +232,120 @@ export function ProviderProducts() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Dialog para editar producto */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar producto</DialogTitle>
+            <DialogDescription>
+              Actualiza la información de tu producto
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nombre del producto</Label>
+              <Input
+                id="edit-name"
+                required
+                placeholder="Café Orgánico Premium"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-category">Categoría</Label>
+              <select
+                id="edit-category"
+                required
+                className="w-full px-3 py-2 border rounded-md"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              >
+                <option value="">Seleccionar categoría</option>
+                <option value="Café">Café</option>
+                <option value="Frutas">Frutas</option>
+                <option value="Granos">Granos</option>
+                <option value="Miel">Miel</option>
+                <option value="Cacao">Cacao</option>
+                <option value="Lácteos">Lácteos</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-price">Precio (L)</Label>
+                <Input
+                  id="edit-price"
+                  required
+                  type="number"
+                  step="0.01"
+                  placeholder="250"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-stock">Cantidad en stock</Label>
+                <Input
+                  id="edit-stock"
+                  required
+                  type="number"
+                  placeholder="45"
+                  value={formData.stock}
+                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-location">Ubicación</Label>
+              <Input
+                id="edit-location"
+                required
+                placeholder="Tu ciudad o región"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-image">URL de imagen</Label>
+              <Input
+                id="edit-image"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+                value={formData.image}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Descripción</Label>
+              <textarea
+                id="edit-description"
+                required
+                className="w-full px-3 py-2 border rounded-md min-h-[100px]"
+                placeholder="Describe tu producto..."
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+            <div className="flex gap-3 justify-end pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsEditDialogOpen(false);
+                  setEditingProduct(null);
+                  resetForm();
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                Actualizar producto
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardContent className="p-6">
@@ -182,7 +386,7 @@ export function ProviderProducts() {
                         variant="ghost"
                         size="icon"
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                        onClick={() => toast.info("Función de edición en desarrollo")}
+                        onClick={() => handleEdit(product)}
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -190,7 +394,7 @@ export function ProviderProducts() {
                         variant="ghost"
                         size="icon"
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => toast.info("Función de eliminación en desarrollo")}
+                        onClick={() => handleDelete(product.id)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

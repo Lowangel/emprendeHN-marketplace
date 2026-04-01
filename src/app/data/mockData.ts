@@ -1,4 +1,18 @@
-export const mockProducts = [
+export interface Product {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  location: string;
+  image: string;
+  description: string;
+  stock: number;
+  provider: string;
+  rating: number;
+}
+
+export const initialProducts: Product[] = [
+  // ← aquí pegas exactamente todos tus productos que ya tienes
   {
     id: "1",
     name: "Café Orgánico de Copán",
@@ -95,7 +109,9 @@ export const mockProducts = [
     provider: "Tortillería La Tradición",
     rating: 4.5,
   },
+  // ... resto de productos
 ];
+
 
 export const categories = [
   { name: "Café", icon: "Coffee", count: 12 },
