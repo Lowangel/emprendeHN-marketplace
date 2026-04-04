@@ -16,9 +16,10 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { useCart } from "../hooks/useCart";
 
 export function Layout() {
-  const [cartCount] = useState(3);
+  const { cartItems } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -126,9 +127,9 @@ export function Layout() {
                   <Link to="/cart">
                     <Button variant="ghost" size="icon" className="relative">
                       <ShoppingCart className="w-5 h-5" />
-                      {cartCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                          {cartCount}
+                      {cartItems.length > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                          {cartItems.length}
                         </span>
                       )}
                     </Button>

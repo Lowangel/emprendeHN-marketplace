@@ -8,9 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Separator } from "../components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { toast } from "sonner";
+import { useCart } from "../hooks/useCart";
+import { useOrders } from "../hooks/useOrders";
 
 export function Checkout() {
   const navigate = useNavigate();
+  const { cartItems, subtotal, shipping, total, clearCart } = useCart();
+  const { addOrder } = useOrders();
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [formData, setFormData] = useState({
     name: "",
@@ -23,15 +27,44 @@ export function Checkout() {
     cvv: "",
   });
 
+  // Redirigir si el carrito está vacío
+  if (cartItems.length === 0) {
+    navigate('/cart');
+    return null;
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Crear el pedido
+    const order = {
+      customerName: formData.name,
+      customerPhone: formData.phone,
+      customerAddress: formData.address,
+      customerCity: formData.city,
+      paymentMethod,
+      items: cartItems.map(item => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        provider: item.product.provider,
+        quantity: item.quantity,
+        price: item.product.price,
+      })),
+      subtotal,
+      shipping,
+      total,
+      status: 'Pendiente' as const,
+    };
+
+    // Guardar el pedido
+    addOrder(order);
+
+    // Limpiar el carrito
+    clearCart();
+
     toast.success("¡Pedido realizado con éxito! Te contactaremos pronto.");
     setTimeout(() => navigate("/"), 2000);
   };
-
-  const subtotal = 750;
-  const shipping = 50;
-  const total = subtotal + shipping;
 
   return (
     <div className="container mx-auto px-4 py-8">

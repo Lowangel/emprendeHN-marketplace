@@ -11,6 +11,40 @@ export interface Product {
   rating: number;
 }
 
+export interface Provider {
+  id: string;
+  name: string;
+  contact: string;
+  email: string;
+  phone: string;
+  location: string;
+  category: string;
+  status: 'Activo' | 'Inactivo' | 'Pendiente';
+  joinDate: string;
+  description: string;
+}
+
+export interface Order {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  customerAddress: string;
+  customerCity: string;
+  paymentMethod: string;
+  items: {
+    productId: string;
+    productName: string;
+    provider: string;
+    quantity: number;
+    price: number;
+  }[];
+  subtotal: number;
+  shipping: number;
+  total: number;
+  status: 'Pendiente' | 'Completada' | 'Cancelada';
+  date: string;
+}
+
 export const initialProducts: Product[] = [
   // ← aquí pegas exactamente todos tus productos que ya tienes
   {
@@ -113,6 +147,70 @@ export const initialProducts: Product[] = [
 ];
 
 
+export const initialProviders: Provider[] = [
+  {
+    id: "1",
+    name: "Finca Los Pinos",
+    contact: "Juan Pérez",
+    email: "juan@fincalospinos.hn",
+    phone: "+504 9876-5432",
+    location: "Copán",
+    category: "Café",
+    status: "Activo",
+    joinDate: "2023-06-15",
+    description: "Finca dedicada al cultivo de café orgánico en las montañas de Copán.",
+  },
+  {
+    id: "2",
+    name: "Apiarios El Bosque",
+    contact: "María González",
+    email: "maria@apiarioselbosque.hn",
+    phone: "+504 9876-5433",
+    location: "Comayagua",
+    category: "Miel",
+    status: "Activo",
+    joinDate: "2023-08-20",
+    description: "Productores de miel pura de abeja con más de 10 años de experiencia.",
+  },
+  {
+    id: "3",
+    name: "Cooperativa La Esperanza",
+    contact: "Carlos Rodríguez",
+    email: "carlos@cooperativalaesperanza.hn",
+    phone: "+504 9876-5434",
+    location: "Intibucá",
+    category: "Granos",
+    status: "Activo",
+    joinDate: "2023-05-10",
+    description: "Cooperativa de agricultores orgánicos especializados en frijoles y granos.",
+  },
+  {
+    id: "4",
+    name: "Cacao del Atlántico",
+    contact: "Ana López",
+    email: "ana@cacaodelatlantico.hn",
+    phone: "+504 9876-5435",
+    location: "La Ceiba",
+    category: "Cacao",
+    status: "Activo",
+    joinDate: "2023-09-01",
+    description: "Especialistas en chocolate artesanal y productos derivados del cacao hondureño.",
+  },
+  {
+    id: "5",
+    name: "Frutas del Valle",
+    contact: "Pedro Martínez",
+    email: "pedro@frutasdelvalle.hn",
+    phone: "+504 9876-5436",
+    location: "El Progreso",
+    category: "Frutas",
+    status: "Activo",
+    joinDate: "2023-07-25",
+    description: "Cultivadores de frutas frescas y plátanos en el valle de Sula.",
+  },
+];
+
+
 export const categories = [
   { name: "Café", icon: "Coffee", count: 12 },
   { name: "Frutas", icon: "Apple", count: 28 },
@@ -120,6 +218,7 @@ export const categories = [
   { name: "Miel", icon: "Droplets", count: 8 },
   { name: "Cacao", icon: "Cookie", count: 6 },
   { name: "Lácteos", icon: "Milk", count: 15 },
+  { name: "Variedades", icon: "Package", count: initialProducts.length },
 ];
 
 export const mockUsers = [

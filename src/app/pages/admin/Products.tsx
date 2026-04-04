@@ -33,7 +33,7 @@ export function AdminProducts() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
 
   const filteredProducts = products.filter((product) => {
-    if (filter === "all") return true;
+    if (filter === "all" || filter === "Variedades") return true;
     return product.category === filter;
   });
 

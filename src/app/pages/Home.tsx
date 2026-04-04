@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useState, useMemo } from "react";
 import { Search, MapPin, Star, TrendingUp, Shield, Truck } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -9,7 +10,17 @@ import { useProducts } from "../hooks/useProducts";
 
 export function Home() {
   const { products } = useProducts();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("Todas las ubicaciones");
   const featuredProducts = products.slice(0, 4);
+
+  const filteredFeatured = useMemo(() => {
+    return featuredProducts.filter((product) => {
+      const matchesQuery = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesLocation = selectedLocation === "Todas las ubicaciones" || product.location === selectedLocation;
+      return matchesQuery && matchesLocation;
+    });
+  }, [featuredProducts, searchQuery, selectedLocation]);
 
   return (
     <div>
@@ -32,11 +43,17 @@ export function Home() {
                 <Input
                   placeholder="Buscar productos..."
                   className="border-0 focus-visible:ring-0 shadow-none"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="flex items-center gap-2 px-3 border-t md:border-t-0 md:border-l border-slate-200 pt-2 md:pt-0">
                 <MapPin className="w-5 h-5 text-slate-400" />
-                <select className="border-0 bg-transparent text-slate-700 focus:outline-none">
+                <select 
+                  className="border-0 bg-transparent text-slate-700 focus:outline-none"
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                >
                   <option>Todas las ubicaciones</option>
                   <option>Tegucigalpa</option>
                   <option>San Pedro Sula</option>
@@ -71,6 +88,7 @@ export function Home() {
                         {category.name === "Miel" && "🍯"}
                         {category.name === "Cacao" && "🍫"}
                         {category.name === "Lácteos" && "🥛"}
+                        {category.name === "Variedades" && "📦"}
                       </span>
                     </div>
                     <h3 className="font-semibold text-slate-900 mb-1">{category.name}</h3>
@@ -97,7 +115,7 @@ export function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
+            {filteredFeatured.map((product) => (
               <Link key={product.id} to={`/product/${product.id}`}>
                 <Card className="overflow-hidden hover:shadow-lg transition group">
                   <div className="aspect-square overflow-hidden bg-slate-200">

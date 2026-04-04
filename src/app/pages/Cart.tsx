@@ -1,36 +1,13 @@
 import { Link } from "react-router";
-import { useState } from "react";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { initialProducts } from "../data/mockData";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { Separator } from "../components/ui/separator";
+import { useCart } from "../hooks/useCart";
 
 export function Cart() {
-  const [cartItems, setCartItems] = useState([
-    { product: initialProducts[0], quantity: 2 },
-    { product: initialProducts[1], quantity: 1 },
-    { product: initialProducts[3], quantity: 1 },
-  ]);
-
-  const updateQuantity = (productId: string, newQuantity: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.product.id === productId
-          ? { ...item, quantity: Math.max(1, Math.min(item.product.stock, newQuantity)) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (productId: string) => {
-    setCartItems((items) => items.filter((item) => item.product.id !== productId));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const shipping = 50;
-  const total = subtotal + shipping;
+  const { cartItems, updateQuantity, removeFromCart, subtotal, shipping, total } = useCart();
 
   if (cartItems.length === 0) {
     return (
@@ -84,7 +61,7 @@ export function Cart() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => removeItem(item.product.id)}
+                        onClick={() => removeFromCart(item.product.id)}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4" />

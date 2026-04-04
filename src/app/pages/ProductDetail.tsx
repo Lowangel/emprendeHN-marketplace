@@ -4,6 +4,7 @@ import { Star, MapPin, Minus, Plus, ShoppingCart, Store, Truck, Shield } from "l
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { useProducts } from "../hooks/useProducts";
+import { useCart } from "../hooks/useCart";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ export function ProductDetail() {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const { products } = useProducts();
+  const { addToCart } = useCart();
 
   const product = products.find((p) => p.id === id);
 
@@ -27,6 +29,7 @@ export function ProductDetail() {
   }
 
   const handleAddToCart = () => {
+    addToCart(product, quantity);
     toast.success(`${quantity} ${product.name} agregado al carrito`);
   };
 

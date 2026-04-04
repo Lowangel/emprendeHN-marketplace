@@ -20,9 +20,11 @@ export function Catalog() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
   const [location, setLocation] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredProducts = products.filter((product) => {
-    if (selectedCategory !== "all" && product.category !== selectedCategory) return false;
+    if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (selectedCategory !== "all" && selectedCategory !== "Variedades" && product.category !== selectedCategory) return false;
     if (priceRange === "low" && product.price > 100) return false;
     if (priceRange === "medium" && (product.price <= 100 || product.price > 200)) return false;
     if (priceRange === "high" && product.price <= 200) return false;
@@ -51,6 +53,8 @@ export function Catalog() {
             <Input
               placeholder="Buscar productos..."
               className="border-0 focus-visible:ring-0 shadow-none p-0"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
@@ -99,9 +103,19 @@ export function Catalog() {
         </div>
 
         {/* Active Filters */}
-        {(selectedCategory !== "all" || priceRange !== "all" || location !== "all") && (
+        {(searchQuery || selectedCategory !== "all" || priceRange !== "all" || location !== "all") && (
           <div className="mt-4 flex items-center gap-2 flex-wrap">
             <span className="text-sm text-slate-600">Filtros activos:</span>
+            {searchQuery && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchQuery("")}
+                className="h-7"
+              >
+                "{searchQuery}" ×
+              </Button>
+            )}
             {selectedCategory !== "all" && (
               <Button
                 variant="outline"
@@ -197,6 +211,7 @@ export function Catalog() {
           <Button
             variant="outline"
             onClick={() => {
+              setSearchQuery("");
               setSelectedCategory("all");
               setPriceRange("all");
               setLocation("all");

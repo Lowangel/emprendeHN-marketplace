@@ -17,12 +17,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { mockSales } from "../../data/mockData";
+import { useOrders } from "../../hooks/useOrders";
 import { toast } from "sonner";
 
 export function ProviderSales() {
+  const { orders } = useOrders();
   const [filter, setFilter] = useState("all");
-  const [sales] = useState(mockSales);
+
+  // Filtrar pedidos del proveedor actual (hardcoded por ahora)
+  const providerName = "Finca Los Pinos";
+  const providerOrders = orders.filter(order =>
+    order.items.some(item => item.provider === providerName)
+  );
+
+  // Convertir pedidos a formato de ventas para mostrar
+  const sales = providerOrders.flatMap(order =>
+    order.items
+      .filter(item => item.provider === providerName)
+      .map(item => ({
+        id: `${order.id}-${item.productId}`,
+        product: item.productName,
+        quantity: item.quantity,
+        total: item.price * item.quantity,
+        customer: order.customerName,
+        date: order.date,
+        status: order.status,
+      }))
+  );
 
   const filteredSales = sales.filter((sale) => {
     if (filter === "all") return true;
