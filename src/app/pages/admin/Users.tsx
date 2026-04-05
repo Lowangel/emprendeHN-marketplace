@@ -24,20 +24,82 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { mockUsers } from "../../data/mockData";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
+import { Label } from "../../components/ui/label";
+import { useUsers } from "../../hooks/useUsers";
 import { toast } from "sonner";
 
 export function AdminUsers() {
   const [filter, setFilter] = useState("all");
-  const [users] = useState(mockUsers);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: "",
+    email: "",
+    type: "Consumidor" as "Consumidor" | "Proveedor",
+  });
+  const { users, updateUser, addUser } = useUsers();
 
   const filteredUsers = users.filter((user) => {
-    if (filter === "all") return true;
-    return user.type === filter;
+    const matchesFilter = filter === "all" || user.type === filter;
+    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
   });
 
-  const handleAction = (action: string, userName: string) => {
-    toast.info(`Acción "${action}" realizada para ${userName}`);
+  const handleAction = (action: string, userId: string, userName: string) => {
+    switch (action) {
+      case "Aprobar":
+        updateUser(userId, { status: "Activo" });
+        toast.success(`Usuario ${userName} aprobado`);
+        break;
+      case "Suspender":
+        updateUser(userId, { status: "Suspendido" });
+        toast.success(`Usuario ${userName} suspendido`);
+        break;
+      case "Ver perfil":
+        toast.info(`Ver perfil de ${userName}`);
+        break;
+      case "Editar":
+        toast.info(`Editar usuario ${userName}`);
+        break;
+      default:
+        toast.info(`Acción "${action}" realizada para ${userName}`);
+    }
+  };
+
+  const handleAddUser = () => {
+    if (!newUser.name.trim() || !newUser.email.trim()) {
+      toast.error("Por favor completa todos los campos");
+      return;
+    }
+
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newUser.email)) {
+      toast.error("Por favor ingresa un email válido");
+      return;
+    }
+
+    addUser({
+      name: newUser.name.trim(),
+      email: newUser.email.trim(),
+      type: newUser.type,
+      status: "Activo",
+      joinDate: new Date().toISOString().split('T')[0],
+    });
+
+    toast.success(`Usuario ${newUser.name} agregado exitosamente`);
+    setNewUser({ name: "", email: "", type: "Consumidor" });
+    setIsAddUserOpen(false);
   };
 
   return (
@@ -47,10 +109,73 @@ export function AdminUsers() {
           <h1 className="text-3xl font-black text-slate-900 mb-2">Gestión de usuarios</h1>
           <p className="text-slate-600">Administra todos los usuarios del sistema</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
-          <UserPlus className="w-4 h-4 mr-2" />
-          Agregar usuario
-        </Button>
+        <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-green-600 hover:bg-green-700">
+              <UserPlus className="w-4 h-4 mr-2" />
+              Agregar usuario
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Agregar nuevo usuario</DialogTitle>
+              <DialogDescription>
+                Completa la información del nuevo usuario. Se creará con estado "Activo".
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Nombre
+                </Label>
+                <Input
+                  id="name"
+                  value={newUser.name}
+                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  className="col-span-3"
+                  placeholder="Nombre completo"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  className="col-span-3"
+                  placeholder="usuario@email.com"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="type" className="text-right">
+                  Tipo
+                </Label>
+                <Select
+                  value={newUser.type}
+                  onValueChange={(value: "Consumidor" | "Proveedor") =>
+                    setNewUser({ ...newUser, type: value })
+                  }
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Consumidor">Consumidor</SelectItem>
+                    <SelectItem value="Proveedor">Proveedor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" onClick={handleAddUser}>
+                Agregar usuario
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Stats */}
@@ -87,6 +212,8 @@ export function AdminUsers() {
               <Search className="w-5 h-5 text-slate-400" />
               <Input
                 placeholder="Buscar usuarios..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="border-0 focus-visible:ring-0 shadow-none p-0"
               />
             </div>
@@ -157,20 +284,20 @@ export function AdminUsers() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleAction("Ver perfil", user.name)}>
+                        <DropdownMenuItem onClick={() => handleAction("Ver perfil", user.id, user.name)}>
                           Ver perfil
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction("Editar", user.name)}>
+                        <DropdownMenuItem onClick={() => handleAction("Editar", user.id, user.name)}>
                           Editar
                         </DropdownMenuItem>
                         {user.status === "Pendiente" && (
-                          <DropdownMenuItem onClick={() => handleAction("Aprobar", user.name)}>
+                          <DropdownMenuItem onClick={() => handleAction("Aprobar", user.id, user.name)}>
                             Aprobar
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
                           className="text-red-600"
-                          onClick={() => handleAction("Suspender", user.name)}
+                          onClick={() => handleAction("Suspender", user.id, user.name)}
                         >
                           Suspender
                         </DropdownMenuItem>

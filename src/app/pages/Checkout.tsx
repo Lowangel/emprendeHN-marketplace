@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreditCard, Truck, MapPin, Check } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -28,10 +28,11 @@ export function Checkout() {
   });
 
   // Redirigir si el carrito está vacío
-  if (cartItems.length === 0) {
-    navigate('/cart');
-    return null;
-  }
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      navigate('/cart');
+    }
+  }, [cartItems.length, navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

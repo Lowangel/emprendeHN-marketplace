@@ -52,7 +52,7 @@ export function Layout() {
                 <Link to="/providers" className="text-slate-700 hover:text-green-600 transition">
                   Proveedores
                 </Link>
-                <Link to="#" className="text-slate-700 hover:text-green-600 transition">
+                <Link to="/about" className="text-slate-700 hover:text-green-600 transition">
                   Nosotros
                 </Link>
               </nav>
@@ -166,7 +166,7 @@ export function Layout() {
                   <Link to="/providers" className="text-slate-700 hover:text-green-600 py-2">
                     Proveedores
                   </Link>
-                  <Link to="#" className="text-slate-700 hover:text-green-600 py-2">
+                  <Link to="/about" className="text-slate-700 hover:text-green-600 py-2">
                     Nosotros
                   </Link>
                 </nav>
@@ -244,6 +244,11 @@ export function Layout() {
                   <a href="/providers" className="hover:text-green-400 transition">
                     Proveedores
                   </a>
+                </li>
+                <li>
+                  <Link to="/about" className="hover:text-green-400 transition">
+                    Nosotros
+                  </Link>
                 </li>
               </ul>
             </div>

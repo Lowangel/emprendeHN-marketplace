@@ -34,6 +34,8 @@ export function ProductDetail() {
   };
 
   const handleBuyNow = () => {
+    addToCart(product, quantity);
+    toast.success(`${quantity} ${product.name} agregado al carrito`);
     navigate("/checkout");
   };
 

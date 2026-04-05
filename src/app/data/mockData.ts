@@ -45,6 +45,15 @@ export interface Order {
   date: string;
 }
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  type: 'Consumidor' | 'Proveedor';
+  status: 'Activo' | 'Pendiente' | 'Suspendido';
+  joinDate: string;
+}
+
 export const initialProducts: Product[] = [
   // ← aquí pegas exactamente todos tus productos que ya tienes
   {
@@ -211,47 +220,52 @@ export const initialProviders: Provider[] = [
 ];
 
 
+// Función para calcular el conteo de productos por categoría
+const getCategoryCount = (categoryName: string) => {
+  return initialProducts.filter(product => product.category === categoryName).length;
+};
+
 export const categories = [
-  { name: "Café", icon: "Coffee", count: 12 },
-  { name: "Frutas", icon: "Apple", count: 28 },
-  { name: "Granos", icon: "Wheat", count: 18 },
-  { name: "Miel", icon: "Droplets", count: 8 },
-  { name: "Cacao", icon: "Cookie", count: 6 },
-  { name: "Lácteos", icon: "Milk", count: 15 },
-  { name: "Variedades", icon: "Package", count: initialProducts.length },
+  { name: "Café", icon: "Coffee", count: getCategoryCount("Café") },
+  { name: "Frutas", icon: "Apple", count: getCategoryCount("Frutas") },
+  { name: "Granos", icon: "Wheat", count: getCategoryCount("Granos") },
+  { name: "Miel", icon: "Droplets", count: getCategoryCount("Miel") },
+  { name: "Cacao", icon: "Cookie", count: getCategoryCount("Cacao") },
+  { name: "Lácteos", icon: "Milk", count: getCategoryCount("Lácteos") },
+  { name: "Variedades", icon: "Package", count: getCategoryCount("Variedades") },
 ];
 
-export const mockUsers = [
+export const initialUsers: User[] = [
   {
     id: "1",
     name: "María López",
     email: "maria@email.com",
-    type: "Consumidor",
-    status: "Activo",
+    type: "Consumidor" as const,
+    status: "Activo" as const,
     joinDate: "2024-01-15",
   },
   {
     id: "2",
     name: "Carlos Hernández",
     email: "carlos@email.com",
-    type: "Proveedor",
-    status: "Activo",
+    type: "Proveedor" as const,
+    status: "Activo" as const,
     joinDate: "2023-11-20",
   },
   {
     id: "3",
     name: "Ana Martínez",
     email: "ana@email.com",
-    type: "Consumidor",
-    status: "Activo",
+    type: "Consumidor" as const,
+    status: "Activo" as const,
     joinDate: "2024-02-10",
   },
   {
     id: "4",
     name: "José Ramírez",
     email: "jose@email.com",
-    type: "Proveedor",
-    status: "Pendiente",
+    type: "Proveedor" as const,
+    status: "Pendiente" as const,
     joinDate: "2024-03-05",
   },
 ];

@@ -6,6 +6,7 @@ import { Catalog } from "./pages/Catalog";
 import { ProductDetail } from "./pages/ProductDetail";
 import { Cart } from "./pages/Cart";
 import { Checkout } from "./pages/Checkout";
+import { About } from "./pages/about";
 import { ProviderDashboard } from "./pages/provider/Dashboard";
 import { ProviderProducts } from "./pages/provider/Products";
 import { ProviderSales } from "./pages/provider/Sales";
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
         path: "catalog", Component: Catalog,
 
       },
+      { path: "about", Component: About },
       {
         path: "providers", Component: Providers,
         children: [

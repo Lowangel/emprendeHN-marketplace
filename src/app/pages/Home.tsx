@@ -5,6 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
 import { categories } from "../data/mockData";
+import { FaCoffee, FaAppleAlt, FaSeedling, FaBeer, FaCookieBite, FaGlassWhiskey, FaBoxOpen } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { useProducts } from "../hooks/useProducts";
 
@@ -13,6 +14,15 @@ export function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("Todas las ubicaciones");
   const featuredProducts = products.slice(0, 4);
+
+  const categoriesWithCount = useMemo(
+    () =>
+      categories.map((category) => ({
+        ...category,
+        count: products.filter((product) => product.category === category.name).length,
+      })),
+    [products],
+  );
 
   const filteredFeatured = useMemo(() => {
     return featuredProducts.filter((product) => {
@@ -49,7 +59,7 @@ export function Home() {
               </div>
               <div className="flex items-center gap-2 px-3 border-t md:border-t-0 md:border-l border-slate-200 pt-2 md:pt-0">
                 <MapPin className="w-5 h-5 text-slate-400" />
-                <select 
+                <select
                   className="border-0 bg-transparent text-slate-700 focus:outline-none"
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
@@ -76,19 +86,19 @@ export function Home() {
             Explora por categoría
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category) => (
+            {categoriesWithCount.map((category) => (
               <Link key={category.name} to="/catalog">
                 <Card className="hover:shadow-lg transition cursor-pointer group">
                   <CardContent className="p-6 text-center">
                     <div className="w-16 h-16 mx-auto mb-3 bg-green-50 rounded-full flex items-center justify-center group-hover:bg-green-100 transition">
                       <span className="text-3xl">
-                        {category.name === "Café" && "☕"}
-                        {category.name === "Frutas" && "🍎"}
-                        {category.name === "Granos" && "🌾"}
-                        {category.name === "Miel" && "🍯"}
-                        {category.name === "Cacao" && "🍫"}
-                        {category.name === "Lácteos" && "🥛"}
-                        {category.name === "Variedades" && "📦"}
+                        {category.name === "Café" && <FaCoffee size={28} className="text-green-600" />}
+                        {category.name === "Frutas" && <FaAppleAlt size={28} className="text-red-500" />}
+                        {category.name === "Granos" && <FaSeedling size={28} className="text-yellow-600" />}
+                        {category.name === "Miel" && <FaBeer size={28} className="text-amber-500" />}
+                        {category.name === "Cacao" && <FaCookieBite size={28} className="text-brown-600" />}
+                        {category.name === "Lácteos" && <FaGlassWhiskey size={28} className="text-blue-400" />}
+                        {category.name === "Variedades" && <FaBoxOpen size={28} className="text-gray-600" />}
                       </span>
                     </div>
                     <h3 className="font-semibold text-slate-900 mb-1">{category.name}</h3>

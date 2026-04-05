@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
-import { type Product } from "../../data/mockData";
+import { categories, type Product } from "../../data/mockData";
 import { useProducts } from "../../hooks/useProducts";
 import { toast } from "sonner";
 
@@ -149,12 +149,11 @@ export function ProviderProducts() {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 >
                   <option value="">Seleccionar categoría</option>
-                  <option value="Café">Café</option>
-                  <option value="Frutas">Frutas</option>
-                  <option value="Granos">Granos</option>
-                  <option value="Miel">Miel</option>
-                  <option value="Cacao">Cacao</option>
-                  <option value="Lácteos">Lácteos</option>
+                  {categories.map((category) => (
+                    <option key={category.name} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -263,12 +262,11 @@ export function ProviderProducts() {
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               >
                 <option value="">Seleccionar categoría</option>
-                <option value="Café">Café</option>
-                <option value="Frutas">Frutas</option>
-                <option value="Granos">Granos</option>
-                <option value="Miel">Miel</option>
-                <option value="Cacao">Cacao</option>
-                <option value="Lácteos">Lácteos</option>
+                {categories.map((category) => (
+                  <option key={category.name} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -408,6 +406,7 @@ export function ProviderProducts() {
             <div className="text-center py-12">
               <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <p className="text-slate-600">No tienes productos registrados</p>
+          
             </div>
           )}
         </CardContent>

@@ -1,5 +1,5 @@
-import { Link } from "react-router";
-import { useState } from "react";
+import { Link, useSearchParams } from "react-router";
+import { useEffect, useState } from "react";
 import { Search, MapPin, Star, SlidersHorizontal } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -17,14 +17,20 @@ import {
 
 export function Catalog() {
   const { products } = useProducts();
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
   const [location, setLocation] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    const category = searchParams.get("category");
+    setSelectedCategory(category ?? "all");
+  }, [searchParams]);
+
   const filteredProducts = products.filter((product) => {
     if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    if (selectedCategory !== "all" && selectedCategory !== "Variedades" && product.category !== selectedCategory) return false;
+    if (selectedCategory !== "all" && product.category !== selectedCategory) return false;
     if (priceRange === "low" && product.price > 100) return false;
     if (priceRange === "medium" && (product.price <= 100 || product.price > 200)) return false;
     if (priceRange === "high" && product.price <= 200) return false;
